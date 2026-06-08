@@ -9,15 +9,15 @@ def generate_course(text):
     genai.configure(api_key=api_key)
 
     model = genai.GenerativeModel(
-        "gemini-2.5-flash"
+        "gemini-1.5-flash"
     )
 
     prompt = f"""
 Convierte la siguiente transcripción en un curso MOOC profesional.
 
-Genera:
+Genera en formato Markdown:
 
-# Título
+# Título del Curso
 
 ## Descripción
 
@@ -37,11 +37,20 @@ Genera:
 
 ## Actividades Prácticas
 
-## Resumen
+## Resumen General
 
 ## Examen Final
 
-Genera 10 preguntas de opción múltiple con respuesta correcta.
+Genera 10 preguntas de opción múltiple.
+
+Cada pregunta debe tener:
+
+A)
+B)
+C)
+D)
+
+Indica claramente la respuesta correcta.
 
 TRANSCRIPCIÓN:
 

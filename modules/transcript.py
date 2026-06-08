@@ -3,17 +3,28 @@ from youtube_transcript_api import YouTubeTranscriptApi
 
 def get_transcript(video_id):
 
-    api = YouTubeTranscriptApi()
+    try:
 
-    transcript_list = api.list(video_id)
+        api = YouTubeTranscriptApi()
 
-    transcript = transcript_list.find_transcript(["es", "en"])
+        transcript_list = api.list(video_id)
 
-    data = transcript.fetch()
+        transcript = transcript_list.find_transcript(
+            ["es", "en"]
+        )
 
-    text = " ".join(
-        item.text if hasattr(item, "text") else item["text"]
-        for item in data
-    )
+        data = transcript.fetch()
 
-    return text
+        text = " ".join(
+            item.text if hasattr(item, "text")
+            else item["text"]
+            for item in data
+        )
+
+        return text
+
+    except Exception as e:
+
+        raise Exception(
+            f"No fue posible obtener la transcripción del video.\n\n{e}"
+        )

@@ -4,6 +4,12 @@ from urllib.parse import urlparse, parse_qs
 from modules.transcript import get_transcript
 from modules.course_generator import generate_course
 
+st.set_page_config(
+    page_title="YouTube → Curso IA",
+    page_icon="🎓",
+    layout="wide"
+)
+
 
 def get_video_id(url):
     try:
@@ -19,12 +25,6 @@ def get_video_id(url):
     except Exception:
         return None
 
-
-st.set_page_config(
-    page_title="YouTube → Curso IA",
-    page_icon="🎓",
-    layout="wide"
-)
 
 st.title("🎓 Generador de Cursos MOOC con IA")
 
@@ -45,20 +45,32 @@ if st.button("Generar Curso"):
         st.error("URL de YouTube no válida.")
         st.stop()
 
-try:
+    try:
 
-    transcript = """
-    Python es un lenguaje de programación.
-    Las variables almacenan datos.
-    Las funciones permiten reutilizar código.
-    Los ciclos repiten instrucciones.
-    """
+        # TEMPORAL
+        # Cuando arreglemos transcript.py,
+        # cambia esta parte por:
+        #
+        # transcript = get_transcript(video_id)
 
-    course = generate_course(transcript)
+        transcript = """
+        Python es un lenguaje de programación.
+        Las variables almacenan datos.
+        Las funciones permiten reutilizar código.
+        Los ciclos permiten repetir instrucciones.
+        """
 
-    st.success("Curso generado correctamente")
+        with st.spinner("Generando curso con IA..."):
+            course = generate_course(transcript)
 
-    st.markdown(course)
+        st.success("Curso generado correctamente")
+        st.markdown(course)
 
-except Exception as e:
-    st.error(f"Error:\n\n{e}")
+    except Exception as e:
+
+        if "429" in str(e):
+            st.warning(
+                "Se alcanzó el límite de Gemini. Espera aproximadamente 1 minuto y vuelve a intentarlo."
+            )
+        else:
+            st.error(f"Error:\n\n{e}")
