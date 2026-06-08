@@ -1,6 +1,8 @@
 import streamlit as st
-from modules.transcript import get_transcript
 from urllib.parse import urlparse, parse_qs
+
+from modules.transcript import get_transcript
+from modules.course_generator import generate_course
 
 
 def get_video_id(url):
@@ -13,17 +15,27 @@ def get_video_id(url):
             return query.get("v", [None])[0]
 
         return None
-    except:
+
+    except Exception:
         return None
 
 
-st.title("YouTube → Curso IA")
+st.set_page_config(
+    page_title="YouTube → Curso IA",
+    page_icon="🎓",
+    layout="wide"
+)
 
-url = st.text_input("URL de YouTube")
+st.title("🎓 Generador de Cursos MOOC con IA")
+
+url = st.text_input(
+    "URL de YouTube",
+    placeholder="https://youtube.com/watch?v=..."
+)
 
 if st.button("Generar Curso"):
 
-    if  not url:
+    if not url:
         st.error("Ingresa una URL.")
         st.stop()
 
@@ -33,11 +45,20 @@ if st.button("Generar Curso"):
         st.error("URL de YouTube no válida.")
         st.stop()
 
-    try:
-        transcript = get_transcript(video_id)
+try:
 
-        st.success("Transcripción obtenida")
-        st.write(transcript[:1000])
+    transcript = """
+    Python es un lenguaje de programación.
+    Las variables almacenan datos.
+    Las funciones permiten reutilizar código.
+    Los ciclos repiten instrucciones.
+    """
 
-    except Exception as e:
-        st.error(f"No se pudo obtener la transcripción.\n\n{e}")
+    course = generate_course(transcript)
+
+    st.success("Curso generado correctamente")
+
+    st.markdown(course)
+
+except Exception as e:
+    st.error(f"Error:\n\n{e}")

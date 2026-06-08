@@ -1,6 +1,6 @@
 streamlit
 google-generativeai
-youtube-transcript-api==0.6.2
+youtube-transcript-api
 reportlab
 python-dotenv
-pandas  
+pandas
