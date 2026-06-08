@@ -4,18 +4,24 @@ import google.generativeai as genai
 
 def generate_course(text):
 
-    api_key = st.secrets["GEMINI_API_KEY"]
+    try:
 
-    genai.configure(api_key=api_key)
+        api_key = st.secrets["GEMINI_API_KEY"]
 
-    model = genai.GenerativeModel(
-        "gemini-1.5-flash"
-    )
+        genai.configure(
+            api_key=api_key
+        )
 
-    prompt = f"""
+        model = genai.GenerativeModel(
+            "gemini-2.5-flash"
+        )
+
+        prompt = f"""
 Convierte la siguiente transcripción en un curso MOOC profesional.
 
-Genera en formato Markdown:
+Genera el resultado en formato Markdown.
+
+Incluye:
 
 # Título del Curso
 
@@ -57,6 +63,36 @@ TRANSCRIPCIÓN:
 {text}
 """
 
-    response = model.generate_content(prompt)
+        response = model.generate_content(
+            prompt
+        )
 
-    return response.text
+        return response.text
+
+    except Exception as e:
+
+        if "429" in str(e):
+
+            return """
+# Límite alcanzado
+
+Has alcanzado temporalmente el límite gratuito de Gemini.
+
+Espera aproximadamente 1 minuto y vuelve a intentarlo.
+"""
+
+        if "GEMINI_API_KEY" in str(e):
+
+            return """
+# Error de configuración
+
+No se encontró la variable GEMINI_API_KEY en Streamlit Secrets.
+"""
+
+        return f"""
+# Error
+
+Se produjo un error:
+
+{str(e)}
+"""
