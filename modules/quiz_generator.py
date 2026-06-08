@@ -9,22 +9,24 @@ def generate_quiz(course):
     )
 
     model = genai.GenerativeModel(
-        "gemini-1.5-flash"
+        "gemini-2.5-flash"
     )
 
     prompt = f"""
-Genera un examen de 10 preguntas
-de opción múltiple basado en este curso.
+Basado en el siguiente curso genera un examen.
 
-Incluye:
+Genera exactamente 10 preguntas.
 
-Pregunta
-A)
-B)
-C)
-D)
+Formato:
 
-Y marca la respuesta correcta.
+1. Pregunta
+
+A) ...
+B) ...
+C) ...
+D) ...
+
+Respuesta Correcta: A
 
 CURSO:
 
