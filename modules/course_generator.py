@@ -1,8 +1,6 @@
-import os
-import google.generativeai as genai
 import streamlit as st
+import google.generativeai as genai
 
-api_key = st.secrets["GEMINI_API_KEY"]
 
 def generate_course(text):
 
@@ -17,9 +15,9 @@ def generate_course(text):
     prompt = f"""
 Convierte la siguiente transcripción en un curso MOOC profesional.
 
-Genera en formato Markdown:
+Genera:
 
-# Título del Curso
+# Título
 
 ## Descripción
 
@@ -39,20 +37,11 @@ Genera en formato Markdown:
 
 ## Actividades Prácticas
 
-## Resumen General
+## Resumen
 
 ## Examen Final
 
-Genera 10 preguntas de opción múltiple.
-
-Cada pregunta debe tener:
-
-A)
-B)
-C)
-D)
-
-Indica la respuesta correcta.
+Genera 10 preguntas de opción múltiple con respuesta correcta.
 
 TRANSCRIPCIÓN:
 
