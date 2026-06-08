@@ -1,15 +1,12 @@
 import os
 import google.generativeai as genai
+import streamlit as st
 
+api_key = st.secrets["GEMINI_API_KEY"]
 
 def generate_course(text):
 
-    api_key = os.getenv("GEMINI_API_KEY")
-
-    if not api_key:
-        raise Exception(
-            "No se encontró GEMINI_API_KEY"
-        )
+    api_key = st.secrets["GEMINI_API_KEY"]
 
     genai.configure(api_key=api_key)
 
