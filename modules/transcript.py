@@ -1,30 +1,49 @@
-from youtube_transcript_api import YouTubeTranscriptApi
+import whisper
+import yt_dlp
+import tempfile
+import os
 
 
-def get_transcript(video_id):
+def transcribe_file(file_path):
 
-    try:
+    model = whisper.load_model("base")
 
-        api = YouTubeTranscriptApi()
+    result = model.transcribe(
+        file_path,
+        language="es"
+    )
 
-        transcript_list = api.list(video_id)
+    return result["text"]
 
-        transcript = transcript_list.find_transcript(
-            ["es", "en"]
+
+def transcribe_youtube(url):
+
+    temp_dir = tempfile.mkdtemp()
+
+    output_file = os.path.join(
+        temp_dir,
+        "audio.%(ext)s"
+    )
+
+    ydl_opts = {
+        "format": "bestaudio/best",
+        "outtmpl": output_file,
+        "quiet": True
+    }
+
+    with yt_dlp.YoutubeDL(
+        ydl_opts
+    ) as ydl:
+
+        info = ydl.extract_info(
+            url,
+            download=True
         )
 
-        data = transcript.fetch()
-
-        text = " ".join(
-            item.text if hasattr(item, "text")
-            else item["text"]
-            for item in data
+        downloaded_file = ydl.prepare_filename(
+            info
         )
 
-        return text
-
-    except Exception as e:
-
-        raise Exception(
-            f"No fue posible obtener la transcripción del video.\n\n{e}"
-        )
+    return transcribe_file(
+        downloaded_file
+    )

@@ -1,103 +1,138 @@
 import streamlit as st
-from urllib.parse import urlparse, parse_qs
 
-from modules.transcript import get_transcript
-from modules.course_generator import generate_course
+from modules.transcript import (
+    transcribe_file,
+    transcribe_youtube
+)
 
+from modules.course_generator import (
+    generate_course
+)
 
 st.set_page_config(
-    page_title="YouTube → Curso IA",
-    page_icon="🎓",
-    layout="wide"
+    page_title="MOOC IA",
+    page_icon="🎓"
 )
 
+st.title(
+    "🎓 Generador de Cursos MOOC"
+)
 
-def get_video_id(url):
+modo = st.radio(
+    "Origen del contenido",
+    [
+        "YouTube",
+        "Archivo MP4"
+    ]
+)
 
-    try:
+transcript = None
 
-        if "youtu.be" in url:
-            return url.split("/")[-1].split("?")[0]
+if modo == "YouTube":
 
-        if "youtube.com" in url:
-            query = parse_qs(
-                urlparse(url).query
+    url = st.text_input(
+        "URL de YouTube"
+    )
+
+    if st.button(
+        "Generar Curso"
+    ):
+
+        try:
+
+            with st.spinner(
+                "Transcribiendo video..."
+            ):
+
+                transcript = (
+                    transcribe_youtube(
+                        url
+                    )
+                )
+
+            with st.spinner(
+                "Generando curso..."
+            ):
+
+                course = (
+                    generate_course(
+                        transcript
+                    )
+                )
+
+            st.success(
+                "Curso generado"
             )
 
-            return query.get(
-                "v",
-                [None]
-            )[0]
+            st.markdown(
+                course
+            )
 
-        return None
+        except Exception as e:
 
-    except Exception:
-        return None
+            st.error(
+                str(e)
+            )
 
+else:
 
-st.title("🎓 Generador de Cursos MOOC con IA")
+    uploaded_file = st.file_uploader(
+        "Sube un MP4",
+        type=["mp4"]
+    )
 
-url = st.text_input(
-    "URL de YouTube"
-)
-
-if st.button("Generar Curso"):
-
-    if not url:
-
-        st.error(
-            "Ingresa una URL."
+    if (
+        uploaded_file
+        and st.button(
+            "Generar Curso"
         )
+    ):
 
-        st.stop()
+        try:
 
-    video_id = get_video_id(url)
+            temp_path = (
+                f"/tmp/{uploaded_file.name}"
+            )
 
-    if not video_id:
+            with open(
+                temp_path,
+                "wb"
+            ) as f:
 
-        st.error(
-            "URL de YouTube no válida."
-        )
+                f.write(
+                    uploaded_file.getbuffer()
+                )
 
-        st.stop()
+            with st.spinner(
+                "Transcribiendo..."
+            ):
 
-    try:
+                transcript = (
+                    transcribe_file(
+                        temp_path
+                    )
+                )
 
-        # TEMPORAL
-        # Mientras solucionamos YouTube
+            with st.spinner(
+                "Generando curso..."
+            ):
 
-        transcript = """
-Python es un lenguaje de programación.
+                course = (
+                    generate_course(
+                        transcript
+                    )
+                )
 
-Las variables permiten almacenar datos.
+            st.success(
+                "Curso generado"
+            )
 
-Las funciones permiten reutilizar código.
+            st.markdown(
+                course
+            )
 
-Los ciclos permiten repetir instrucciones.
+        except Exception as e:
 
-Las listas permiten almacenar colecciones de datos.
-
-Los diccionarios permiten trabajar con pares clave valor.
-"""
-
-        # Cuando arreglemos transcript.py:
-        #
-        # transcript = get_transcript(video_id)
-
-        course = generate_course(
-            transcript
-        )
-
-        st.success(
-            "Curso generado correctamente"
-        )
-
-        st.markdown(
-            course
-        )
-
-    except Exception as e:
-
-        st.error(
-            f"Error:\n\n{e}"
-        )
+            st.error(
+                str(e)
+            )
