@@ -1,6 +1,8 @@
 streamlit
 google-generativeai
-youtube-transcript-api
-reportlab
 python-dotenv
 pandas
+reportlab
+openai-whisper
+yt-dlp
+ffmpeg-python
